@@ -120,7 +120,6 @@ int main(int argc,char *argv[]) {
     testingDataFileName = string(argv[2]);
 
     vector<string> nameOfAttribute;
-    map<string,set<string> > valueOfAttribute;
 
     FILE *fp = fopen(traningDataFileName.c_str(),"r");
     char ts[2014];
@@ -142,7 +141,6 @@ int main(int argc,char *argv[]) {
         tmap["id"] = intToString(id);
         for ( int i = 0 ; i < (int)dataOfAttribute.size() ; i++ ) {
             tmap[nameOfAttribute[i]] = dataOfAttribute[i];
-            valueOfAttribute[nameOfAttribute[i]].insert(dataOfAttribute[i]);
         }
         data.push_back(tmap);
         id++;
