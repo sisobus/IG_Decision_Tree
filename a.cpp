@@ -144,7 +144,7 @@ int main(int argc,char *argv[]) {
     while ( ts[strlen(ts)-1] == '\n' || ts[strlen(ts)-1] == '\r' )
         ts[strlen(ts)-1] = 0;
     //fscanf(fp,"%[^\n]\n",ts);
-    for ( char* p=strtok(ts,"\t");p;p=strtok(NULL,"\t") ) {
+    for ( char* p=strtok(ts,"\t ");p;p=strtok(NULL,"\t ") ) {
         nameOfAttribute.push_back(string(p));
     }
 
@@ -154,7 +154,7 @@ int main(int argc,char *argv[]) {
         while ( ts[strlen(ts)-1] == '\n' || ts[strlen(ts)-1] == '\r' ) 
             ts[strlen(ts)-1] = 0;
         vector<string> dataOfAttribute;
-        for ( char *p=strtok(ts,"\t");p;p=strtok(NULL,"\t") ) 
+        for ( char *p=strtok(ts,"\t ");p;p=strtok(NULL,"\t ") ) 
             dataOfAttribute.push_back(string(p));
         assert(dataOfAttribute.size()==nameOfAttribute.size());
         map<string,string> tmap;
@@ -180,7 +180,7 @@ int main(int argc,char *argv[]) {
     while ( ts[strlen(ts)-1] == '\n' || ts[strlen(ts)-1] == '\r' )
         ts[strlen(ts)-1] = 0;
     //fscanf(fp,"%[^\n]\n",ts);
-    for ( char* p=strtok(ts,"\t");p;p=strtok(NULL,"\t") ) {
+    for ( char* p=strtok(ts,"\t ");p;p=strtok(NULL,"\t ") ) {
         nameOfTestAttribute.push_back(string(p));
     }
 
@@ -190,7 +190,7 @@ int main(int argc,char *argv[]) {
         while ( ts[strlen(ts)-1] == '\n' || ts[strlen(ts)-1] == '\r' )
             ts[strlen(ts)-1] = 0;
         vector<string> dataOfAttribute;
-        for ( char *p=strtok(ts,"\t");p;p=strtok(NULL,"\t") )
+        for ( char *p=strtok(ts,"\t ");p;p=strtok(NULL,"\t ") )
             dataOfAttribute.push_back(string(p));
         assert(dataOfAttribute.size()==nameOfTestAttribute.size());
         map<string,string> tmap;
