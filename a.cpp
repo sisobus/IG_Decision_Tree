@@ -84,7 +84,6 @@ void createTree(Tree& root,vector<string>& nameOfAttribute) {
         Tree next(nextAttribute,nextData);
         root.child.push_back(next);
     }
-    printf("%s %d\n",root.attribute.c_str(),(int)root.child.size());
     if ( (int)root.child.size() > 1 ) {
         for ( int i = 0 ; i < (int)root.child.size() ; i++ ) 
             createTree(root.child[i],nameOfAttribute);
@@ -110,12 +109,30 @@ string intToString(int n) {
     sprintf(s,"%d",n);
     return string(s);
 }
+string getDecision(Tree& root,vector<string>& nameOfAttribute,map<string,string>& testData,vector<string>& nameOfTestAttribute) {
+    if ( root.child.empty() ) {
+        return root.data[0][nameOfAttribute[(int)nameOfAttribute.size()-1]];
+    } else {
+        for ( int i = 0 ; i < (int)root.child.size() ; i++ ) 
+            if ( testData[root.attribute] == root.child[i].data[0][root.attribute] ) 
+                return getDecision(root.child[i],nameOfAttribute,testData,nameOfTestAttribute);
+    }
+    return "";
+}
+void decisionTestData(Tree& root,vector<string>& nameOfAttribute,vector<map<string,string> >& testData,vector<string>& nameOfTestAttribute) {
+    for ( int i = 0 ; i < (int)testData.size() ; i++ ) {
+        printf("curId[%s] : ",testData[i]["id"].c_str());
+        string now = getDecision(root,nameOfAttribute,testData[i],nameOfTestAttribute);
+        if ( (int)now.length() == 0 ) printf("can not decision\n");
+        else printf("%s\n",now.c_str());
+    }
+}
 
 int main(int argc,char *argv[]) {
     assert(argc==3);
+
     string traningDataFileName;
     string testingDataFileName;
-
     traningDataFileName = string(argv[1]);
     testingDataFileName = string(argv[2]);
 
@@ -123,7 +140,10 @@ int main(int argc,char *argv[]) {
 
     FILE *fp = fopen(traningDataFileName.c_str(),"r");
     char ts[2014];
-    fscanf(fp,"%[^\n]\n",ts);
+    fgets(ts,1024,fp);
+    while ( ts[strlen(ts)-1] == '\n' || ts[strlen(ts)-1] == '\r' )
+        ts[strlen(ts)-1] = 0;
+    //fscanf(fp,"%[^\n]\n",ts);
     for ( char* p=strtok(ts,"\t");p;p=strtok(NULL,"\t") ) {
         nameOfAttribute.push_back(string(p));
     }
@@ -145,12 +165,44 @@ int main(int argc,char *argv[]) {
         data.push_back(tmap);
         id++;
     }
+    fclose(fp);
+
     map<string,double> now = calculateIG(data,nameOfAttribute);
     pair<string,double> maxIG = getMaxIG(now);
 
     Tree root(maxIG.first,data);
     createTree(root,nameOfAttribute);
-    printTreeUsingPreorder(root,nameOfAttribute);
+    //printTreeUsingPreorder(root,nameOfAttribute);
 
+    vector<string> nameOfTestAttribute;
+    fp = fopen(testingDataFileName.c_str(),"r");
+    fgets(ts,1024,fp);
+    while ( ts[strlen(ts)-1] == '\n' || ts[strlen(ts)-1] == '\r' )
+        ts[strlen(ts)-1] = 0;
+    //fscanf(fp,"%[^\n]\n",ts);
+    for ( char* p=strtok(ts,"\t");p;p=strtok(NULL,"\t") ) {
+        nameOfTestAttribute.push_back(string(p));
+    }
+
+    vector<map<string,string> > testData;
+    id = 0;
+    while ( fgets(ts,1024,fp) != NULL ) {
+        while ( ts[strlen(ts)-1] == '\n' || ts[strlen(ts)-1] == '\r' )
+            ts[strlen(ts)-1] = 0;
+        vector<string> dataOfAttribute;
+        for ( char *p=strtok(ts,"\t");p;p=strtok(NULL,"\t") )
+            dataOfAttribute.push_back(string(p));
+        assert(dataOfAttribute.size()==nameOfTestAttribute.size());
+        map<string,string> tmap;
+        tmap["id"] = intToString(id);
+        for ( int i = 0 ; i < (int)dataOfAttribute.size() ; i++ ) {
+            tmap[nameOfTestAttribute[i]] = dataOfAttribute[i];
+        }
+        testData.push_back(tmap);
+        id++;
+    }
+    fclose(fp);
+
+    decisionTestData(root,nameOfAttribute,testData,nameOfTestAttribute);
     return 0;
 }
